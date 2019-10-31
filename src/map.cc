@@ -1,4 +1,5 @@
 #include "map.h"
+#include <GL/glu.h>
 
 #include <cstdlib>
 #include <glm/gtc/matrix_transform.hpp>
@@ -111,9 +112,9 @@ Map::Map(int width, int height)
 }
 
 void Map::Render(GLFWwindow* window, float rotation) {
-  int width, height;
-  glfwGetWindowSize(window, &width, &height);
-  float aspect = (float)height / width;
+  int window_width, window_height;
+  glfwGetWindowSize(window, &window_width, &window_height);
+  float aspect = (float)window_height / window_width;
 
   glm::mat4 model = glm::mat4(1.0f);
   model = glm::rotate(model, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -126,16 +127,15 @@ void Map::Render(GLFWwindow* window, float rotation) {
   glm::mat4 projection =
       glm::perspective(glm::radians(30.0f), aspect, 0.1f, 100.0f);
 
+  shader_.Use();
   shader_.setMatrix4f(0, model);
   shader_.setMatrix4f(1, view);
   shader_.setMatrix4f(2, projection);
-  shader_.Use();
 
   glBindVertexArray(vao_);
 
-  glPointSize(5.0f);
   // glDrawArrays(GL_TRIANGLES, 0, width * height);
-  glDrawElements(GL_TRIANGLES, (width - 1) * (height - 1) * 6, GL_UNSIGNED_INT,
+  glDrawElements(GL_TRIANGLES, (width_ - 1) * (height_ - 1) * 6, GL_UNSIGNED_INT,
                  NULL);
   glBindVertexArray(0);
 }
